@@ -6,7 +6,25 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+
+const allowedOrigins = [
+  "https://localchefbazaar.netlify.app",
+  "https://localchefbazaar-backend-production.up.railway.app",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 // import
 import userRoutes from "./src/routes/user.router.js";
