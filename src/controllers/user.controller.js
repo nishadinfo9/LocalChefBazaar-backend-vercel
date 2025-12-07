@@ -1,0 +1,144 @@
+import { uploadOnCloudinary } from "../middlewares/uploadOnCloudinary.js";
+import { User } from "../models/user.model.js";
+import jwt from "jsonwebtoken";
+
+const registerUser = async (req, res) => {
+  try {
+    const { name, email, password, confirmPassword } = req.body;
+
+    if (!name || !email || !password || !confirmPassword) {
+      return res.status(404).json({ message: "all field does not exist" });
+    }
+
+    if (password !== confirmPassword) {
+      return res
+        .status(401)
+        .json({ message: "confirm password doesn't match" });
+    }
+
+    const existUser = await User.findOne({ email });
+
+    if (existUser) {
+      return res.status(409).json({ message: "user already exist" });
+    }
+
+    //file upload
+    const avatarLocalFile = req.file?.path;
+    const profile = await uploadOnCloudinary(avatarLocalFile);
+
+    const user = await User.create({
+      name,
+      email,
+      password,
+      confirmPassword,
+      profileImage: profile?.url || "",
+    });
+
+    const createdUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
+
+    return res
+      .status(200)
+      .json({ message: "user created successfully", createdUser });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const loggedIn = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(401).json({ message: "email password does not exist" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(409).json({ message: "user does not exist" });
+    }
+
+    const isPasswordValid = await user.isPasswordCorrect(password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid credintials" });
+    }
+
+    const accessToken = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        name: user.name,
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    const refreshToken = jwt.sign(
+      { userId: user._id },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "10days" }
+    );
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    const loginUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json({
+        message: "user login successfully",
+        user: { loginUser, accessToken, refreshToken },
+      });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const logout = async (req, res) => {
+  try {
+    console.log("user", req.user);
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(401).json({ message: "user does not exist" });
+    }
+
+    return res
+      .status(200)
+      .clearCookie("accessToken")
+      .clearCookie("refreshToken")
+      .json({ message: "user logout successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getCurrentUser = async (req, res) => {
+  try {
+    return res.status(200).json({
+      message: "current user found succesfully",
+      user: req.user,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export { registerUser, loggedIn, logout, getCurrentUser };
