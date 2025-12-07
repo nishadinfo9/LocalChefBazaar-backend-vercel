@@ -8,6 +8,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const allowedOrigins = [
+  "http://localhost:5173",
   "https://localchefbazaar.netlify.app",
   "https://localchefbazaar-backend-production.up.railway.app",
 ];
@@ -29,11 +30,13 @@ app.use(
 // import
 import userRoutes from "./src/routes/user.router.js";
 import mealsRoutes from "./src/routes/meal.router.js";
-import mealsReview from "./src/routes/review.router.js";
+import reviewMealRoutes from "./src/routes/review.router.js";
+import favoriteMealRoutes from "./src/routes/favorite.router.js";
 
 // executions
 app.use("/api/v1", userRoutes);
 app.use("/api/v1", mealsRoutes);
-app.use("/api/v1", mealsReview);
+app.use("/api/v1", reviewMealRoutes);
+app.use("/api/v1", favoriteMealRoutes);
 
 export default app;
