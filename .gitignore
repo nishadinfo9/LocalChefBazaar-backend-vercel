@@ -53,3 +53,4 @@ public/uploads/
 # Optional: Local database files (if using SQLite etc.)
 *.sqlite
 *.db
+.vercel
