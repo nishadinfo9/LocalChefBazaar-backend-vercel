@@ -1,13 +1,12 @@
 import { uploadOnCloudinary } from "../middlewares/uploadOnCloudinary.js";
 import { Meal } from "../models/meal.model.js";
 import { User } from "../models/user.model.js";
+import { generateChefId } from "../utils/generateChefId.js";
 
 const createMeal = async (req, res) => {
   try {
     const userId = req.user._id;
     const newMeals = req.body;
-
-    console.log("file", req.file);
 
     const user = await User.findById(userId);
     if (!user) {
@@ -17,7 +16,7 @@ const createMeal = async (req, res) => {
     if (!newMeals) {
       return res.status(401).json({ message: "new meals does not exist" });
     }
-    newMeals.chefId = user._id;
+    // newMeals.chefId = generateChefId();
 
     const foodImageLocalFile = req.file?.path;
     const foodImageUrl = await uploadOnCloudinary(foodImageLocalFile);

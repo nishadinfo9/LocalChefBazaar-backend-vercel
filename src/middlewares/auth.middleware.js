@@ -9,10 +9,13 @@ export const verifyJWT = async (req, res, next) => {
       return res.status(401).json({ message: "token does not exist" });
     }
 
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-
-    if (!decoded) {
-      return res.status(401).json({ message: "decoded token does not exist" });
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    } catch (err) {
+      return res
+        .status(401)
+        .json({ message: "Access token expired or invalid" });
     }
 
     const user = await User.findById(decoded.userId).select(

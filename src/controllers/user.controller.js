@@ -80,7 +80,7 @@ const loggedIn = async (req, res) => {
     const refreshToken = jwt.sign(
       { userId: user._id },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "10days" }
+      { expiresIn: "10d" }
     );
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
@@ -205,6 +205,80 @@ const isFraudUser = async (req, res) => {
   }
 };
 
+const refreshToken = async (req, res) => {
+  try {
+    const incomingRefreshToken = req.cookies?.refreshToken;
+
+    if (!incomingRefreshToken) {
+      return res
+        .status(401)
+        .json({ message: "incomingRefreshToken  does not exist" });
+    }
+
+    const decoded = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    if (!decoded) {
+      return res.status(404).json({ message: "decoded token not found" });
+    }
+
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(409).json({ message: "user does not exist" });
+    }
+
+    if (user.refreshToken !== incomingRefreshToken) {
+      return res
+        .status(401)
+        .json({ message: "Refresh token is expired or used" });
+    }
+
+    const newAccessToken = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        name: user.name,
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    const newRefreshToken = jwt.sign(
+      { userId: user._id },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "10d" }
+    );
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    user.refreshToken = newRefreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    console.log("Refresh token called for user:", user._id);
+
+    return res
+      .status(200)
+      .cookie("accessToken", newAccessToken, {
+        ...options,
+        maxAge: 60 * 60 * 1000,
+      })
+      .cookie("refreshToken", newRefreshToken, {
+        ...options,
+        maxAge: 10 * 24 * 60 * 60 * 1000,
+      })
+      .json({ message: "Access token refreshed" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export {
   registerUser,
   loggedIn,
@@ -213,4 +287,5 @@ export {
   getUserProfile,
   getAllUsers,
   isFraudUser,
+  refreshToken,
 };

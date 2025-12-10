@@ -9,6 +9,7 @@ import {
   getUserProfile,
   getAllUsers,
   isFraudUser,
+  refreshToken,
 } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -23,5 +24,6 @@ router.route("/user/current-user").get(verifyJWT, getCurrentUser);
 router.route("/user/user-profile").get(verifyJWT, getUserProfile);
 router.route("/user/all-users").get(verifyJWT, checkFraud, getAllUsers);
 router.route("/user/fraud-user/:userId").patch(verifyJWT, isFraudUser);
+router.route("/user/refresh-token").post(refreshToken);
 
 export default router;
