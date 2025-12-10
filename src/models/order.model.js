@@ -6,8 +6,8 @@ const orderSchema = new Schema({
     ref: "Meal",
   },
   chefId: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
+    type: String,
+    required: true,
   },
   mealName: {
     type: String,

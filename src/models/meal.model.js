@@ -3,8 +3,8 @@ import mongoose, { Schema } from "mongoose";
 const mealSchema = new Schema(
   {
     chefId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
+      required: true,
     },
     foodName: {
       type: String,

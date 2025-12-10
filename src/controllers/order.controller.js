@@ -45,7 +45,7 @@ const createOrder = async (req, res) => {
       orderTime: new Date(),
       orderStatus: orderStatus || "pending",
       mealName: mealName || meal.foodName,
-      chefId: chefId || meal.chefId,
+      chefId: meal.chefId,
       paymentStatus: "pending",
     };
 
