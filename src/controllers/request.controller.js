@@ -111,6 +111,8 @@ const updateProfileRequest = async (req, res) => {
 
     if (requestStatus === "approve" && requestType === "chef") {
       userUpdateData.chefId = generateChefId();
+    } else if (requestStatus === "approve" && requestType === "admin") {
+      userUpdateData.chefId = null;
     }
 
     await User.findByIdAndUpdate(
