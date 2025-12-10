@@ -92,4 +92,83 @@ const getAllReviews = async (req, res) => {
   }
 };
 
-export { createReview, getReviews, getMyReviews, getAllReviews };
+const getReviewById = async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+
+    if (!reviewId) {
+      return res.status(409).json({ message: "review id does not exist" });
+    }
+
+    const review = await Review.findById(reviewId);
+
+    if (!review) {
+      return res.status(401).json({ message: "review not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "review found successfully", review });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const deleteReview = async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    if (!reviewId) {
+      return res.status(409).json({ message: "review id does not exist" });
+    }
+
+    const review = await Review.findByIdAndDelete(reviewId);
+
+    if (!review) {
+      return res.status(401).json({ message: "review deleting faild" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "review deleted successfully", review });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const updateReview = async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const reviewData = req.body;
+    if (!reviewId) {
+      return res.status(409).json({ message: "review id does not exist" });
+    }
+
+    const review = await Review.findByIdAndUpdate(
+      reviewId,
+      { $set: reviewData },
+      { new: true }
+    );
+
+    if (!review) {
+      return res.status(401).json({ message: "review update faild" });
+    }
+    return res
+      .status(200)
+      .json({ message: "review updated successfully", review });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export {
+  createReview,
+  getReviews,
+  getMyReviews,
+  getAllReviews,
+  getReviewById,
+  deleteReview,
+  updateReview,
+};

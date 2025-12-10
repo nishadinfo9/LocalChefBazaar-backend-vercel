@@ -20,7 +20,7 @@ const requestSchema = new Schema({
   },
   requestStatus: {
     type: String,
-    enum: ["pending", "approve", "reject"],
+    enum: ["pending", "approve", "reject", "deliver"],
     default: "pending",
   },
   requestTime: {

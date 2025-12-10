@@ -81,7 +81,7 @@ const getMyOrder = async (req, res) => {
   }
 };
 
-const updateOrderRequests = async (req, res) => {
+const chefAllOrderRequests = async (req, res) => {
   try {
     const userId = req.user._id;
     const orders = await Order.find({ chefId: userId });
@@ -100,4 +100,19 @@ const updateOrderRequests = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-export { createOrder, getMyOrder, updateOrderRequests };
+
+const updateOrderRequest = async (req, res) => {
+  const { orderId } = req.params;
+  const orderRequestStatus = req.body;
+
+  const order = await Order.findByIdAndUpdate(
+    orderId,
+    { $set: orderRequestStatus },
+    { new: true }
+  );
+
+  return res
+    .status(200)
+    .json({ message: "order request status update successfully", order });
+};
+export { createOrder, getMyOrder, chefAllOrderRequests, updateOrderRequest };

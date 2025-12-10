@@ -4,7 +4,8 @@ const router = Router();
 import {
   createOrder,
   getMyOrder,
-  updateOrderRequests,
+  chefAllOrderRequests,
+  updateOrderRequest,
 } from "../controllers/order.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { checkFraud } from "../middlewares/fraud.middleware.js";
@@ -13,6 +14,9 @@ router.route("/order/create/:mealId").post(verifyJWT, checkFraud, createOrder);
 router.route("/order/my-orders").get(verifyJWT, checkFraud, getMyOrder);
 router
   .route("/order/chef-orders")
-  .get(verifyJWT, checkFraud, updateOrderRequests);
+  .get(verifyJWT, checkFraud, chefAllOrderRequests);
+router
+  .route("/order/update-orders-status/:orderId")
+  .patch(verifyJWT, checkFraud, updateOrderRequest);
 
 export default router;

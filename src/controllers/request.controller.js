@@ -83,7 +83,7 @@ const getAllRequest = async (req, res) => {
   }
 };
 
-const updateRequest = async (req, res) => {
+const updateProfileRequest = async (req, res) => {
   try {
     const { userId } = req.params;
     const { requestStatus, requestType } = req.body;
@@ -129,4 +129,9 @@ const updateRequest = async (req, res) => {
   }
 };
 
-export { createUserRequset, getUserRequest, getAllRequest, updateRequest };
+export {
+  createUserRequset,
+  getUserRequest,
+  getAllRequest,
+  updateProfileRequest,
+};

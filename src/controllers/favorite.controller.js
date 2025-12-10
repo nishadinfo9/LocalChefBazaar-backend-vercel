@@ -90,4 +90,30 @@ const getMyFavoriteMeals = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-export { addFavoriteMeal, getFavoriteMeal, getMyFavoriteMeals };
+
+const deletefavoriteFood = async (req, res) => {
+  try {
+    const { favoriteId } = req.params;
+
+    if (!favoriteId) {
+      return res.status(409).json({ message: "meal id does not exist" });
+    }
+
+    const favorite = await Favorite.findByIdAndDelete(favoriteId);
+
+    if (!favorite) {
+      return res.status(401).json({ message: "favorite food deleted faild" });
+    }
+
+    return res.status(200).json({ message: "favorite food deleted", favorite });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+export {
+  addFavoriteMeal,
+  getFavoriteMeal,
+  getMyFavoriteMeals,
+  deletefavoriteFood,
+};

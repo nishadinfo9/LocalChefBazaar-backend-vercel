@@ -5,7 +5,7 @@ import {
   createUserRequset,
   getUserRequest,
   getAllRequest,
-  updateRequest,
+  updateProfileRequest,
 } from "../controllers/request.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { checkFraud } from "../middlewares/fraud.middleware.js";
@@ -19,6 +19,6 @@ router
   .get(verifyJWT, checkFraud, getAllRequest);
 router
   .route("/user/update-request/:userId")
-  .patch(verifyJWT, checkFraud, updateRequest);
+  .patch(verifyJWT, checkFraud, updateProfileRequest);
 
 export default router;

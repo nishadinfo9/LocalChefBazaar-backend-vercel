@@ -40,9 +40,16 @@ const createMeal = async (req, res) => {
 
 const getAllMeals = async (req, res) => {
   try {
-    const { limit } = req.query;
-    const meals = await Meal.find().sort({ createdAt: -1 }).limit(limit).lean();
-    if (!meals) {
+    const { limit, order } = req.query;
+
+    const sortOptions = { price: 1 };
+    if (order) {
+      sortOptions["price"] = order !== "asce" ? -1 : 1;
+    }
+
+    const meals = await Meal.find().sort(sortOptions).limit(limit).lean();
+
+    if (!meals.length) {
       return res.status(401).json({ message: "meals not found" });
     }
 
@@ -99,4 +106,70 @@ const getMealById = async (req, res) => {
   }
 };
 
-export { createMeal, getAllMeals, getMyMeals, getMealById };
+const updateMeal = async (req, res) => {
+  try {
+    const { mealId } = req.params;
+    const updateMeals = req.body;
+
+    if (!mealId || !updateMeals) {
+      return res
+        .status(409)
+        .json({ message: "meal id or update data does not exist" });
+    }
+
+    const updateLocalImage = req.file?.path;
+
+    if (updateLocalImage) {
+      const uploadImageUrl = await uploadOnCloudinary(updateLocalImage);
+      updateMeals.foodImage = uploadImageUrl.url;
+    } else {
+      const oldImage = await Meal.findById(mealId);
+      updateMeals.foodImage = oldImage.foodImage;
+    }
+
+    const meal = await Meal.findByIdAndUpdate(
+      mealId,
+      { $set: updateMeals },
+      { new: true }
+    );
+
+    if (!meal) {
+      return res.status(401).json({ message: "meal updated faild" });
+    }
+
+    return res.status(200).json({ message: "meal updated successfully", meal });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const deleteMeal = async (req, res) => {
+  try {
+    const { mealId } = req.params;
+
+    if (!mealId) {
+      return res.status(401).json({ message: "mealId does not exist" });
+    }
+
+    const meal = await Meal.findByIdAndDelete(mealId);
+
+    if (!meal) {
+      return res.status(404).json({ message: "meal not found" });
+    }
+
+    return res.status(200).json({ message: "meal deleted successfully", meal });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export {
+  createMeal,
+  getAllMeals,
+  getMyMeals,
+  getMealById,
+  updateMeal,
+  deleteMeal,
+};

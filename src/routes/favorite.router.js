@@ -5,6 +5,7 @@ import {
   addFavoriteMeal,
   getFavoriteMeal,
   getMyFavoriteMeals,
+  deletefavoriteFood,
 } from "../controllers/favorite.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { checkFraud } from "../middlewares/fraud.middleware.js";
@@ -18,5 +19,8 @@ router
 router
   .route("/meal/favorite-meals")
   .get(verifyJWT, checkFraud, getMyFavoriteMeals);
+router
+  .route("/meal/delete-favorite-meals/:favoriteId")
+  .delete(verifyJWT, checkFraud, deletefavoriteFood);
 
 export default router;
