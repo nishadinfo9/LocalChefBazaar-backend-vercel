@@ -11,7 +11,6 @@ app.use(express.static("public"));
 const allowedOrigins = [
   "http://localhost:5173",
   "https://localchefbazaar.netlify.app",
-  "https://localchefbazaar-backend-production.up.railway.app",
 ];
 
 app.use(
@@ -20,7 +19,6 @@ app.use(
     credentials: true,
   })
 );
-
 
 // import
 import userRoutes from "./src/routes/user.router.js";
