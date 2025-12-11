@@ -91,7 +91,8 @@ const loggedIn = async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
+      sameSite: "none",
     };
 
     return res
@@ -253,7 +254,8 @@ const refreshToken = async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
+      sameSite: "none",
     };
 
     user.refreshToken = newRefreshToken;

@@ -11,21 +11,16 @@ app.use(express.static("public"));
 const allowedOrigins = [
   "http://localhost:5173",
   "https://localchefbazaar.netlify.app",
+  "https://localchefbazaar-backend-production.up.railway.app",
 ];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: allowedOrigins,
     credentials: true,
   })
 );
+
 
 // import
 import userRoutes from "./src/routes/user.router.js";
