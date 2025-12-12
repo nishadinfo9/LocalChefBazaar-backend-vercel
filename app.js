@@ -10,11 +10,14 @@ app.use(express.static("public"));
 
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "development" || !process.env.NODE_ENV
-        ? "http://localhost:5173"
-        : process.env.FRONT_URL,
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: function (origin, callback) {
+      const allowedOrigins = [process.env.FRONT_URL, "http://localhost:5173"];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );

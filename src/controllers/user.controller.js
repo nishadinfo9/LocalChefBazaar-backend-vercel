@@ -132,6 +132,7 @@ const logout = async (req, res) => {
 };
 
 const getCurrentUser = async (req, res) => {
+  console.log("token", req.headers.authorization);
   try {
     return res.status(200).json({
       message: "current user found succesfully",
