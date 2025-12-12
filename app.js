@@ -11,7 +11,10 @@ app.use(express.static("public"));
 app.use(
   cors({
     origin: function (origin, callback) {
-      const allowedOrigins = [process.env.FRONT_URL, "http://localhost:5173"];
+      const allowedOrigins = [
+        "https://localchefbazaar.netlify.app",
+        "http://localhost:5173",
+      ];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
