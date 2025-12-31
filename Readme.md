@@ -31,15 +31,6 @@ The API is designed with scalability, security, and clean architecture in mind.
 
 ---
 
-## Base URL
-
-- **Production:** https://your-backend-url-here.com/api/v1  
-- **Development:** http://localhost:3000/api/v1  
-
-*(Replace with your actual deployed backend URL)*
-
----
-
 ## Authentication
 
 - JWT-based authentication system
